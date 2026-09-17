@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Detseel_Prodgect/Detseel_Prodgect.vcxproj" />
+  <Project Path="Detseel_Prodgect/Detseel_Prodgect.vcxproj" Id="d4bae207-c87b-4343-aed6-ae2b93fcea4f" />
 </Solution>
