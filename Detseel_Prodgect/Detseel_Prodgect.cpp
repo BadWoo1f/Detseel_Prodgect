@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <windows.h>
 using namespace std;
 
 /*void() {
@@ -79,7 +80,7 @@ void Choice_Skill(int g) {
 	cin >> gm;
 	cout << "vi vibrali: " << vlvl[gm].name << "\n"; //Выбрали первый скилл
 }
-int Skill_Tree()
+void Skill_Tree()
 {
 	
 	
@@ -128,23 +129,27 @@ int Skill_Tree()
 
 
 void itog() {
-	//сделать прокачку для каждого юнита отдельно (добавлять урон). 
-	//Сделать прокачку hp "базы". 
-	//Сделать xp за победу и саму систему прокачки.
+	//Добавить предметы. Возможно переделать прокачку в предметы, а вместо прокачки добавить уникальные умения, как в работе про прокачку.
+	// первая идея навыка: убрать рандом из игры, игрок сможет выбирать своего бойца после того, как увидит кого выбрал бот
+	// переделать магазин на циклы
 	//Добавить больше описаний происходящего в процессе
+	//добавить предметы с особыми эффектами, например вампиризм, или постоянное уменьшение домага противнику ну или добавить это в скиллы
+
 
 	struct unit {
 		string name;
 		int dmg = 10;
 	};
 	
+	int many = 0;
 	int xp = 0;
+	int lvl = 0; //переменная очков прокачки/ пусть стоимость 1 очка прокачки будет 5xp
 	unit m[3];
-	m[0].name = "mechnik";
-	
-	m[1].name = "luchnik";
+	m[0].name = "Мечник";
 
-	m[2].name = "vsadnik";
+	m[1].name = "Лучник";
+
+	m[2].name = "Всадник";
 
 	int table[3][3]{ //0=ничья 1= проигрыш 2= победа
 		{0,1,2},
@@ -152,59 +157,138 @@ void itog() {
 		{1,2,0}
 	};
 
-	int gamerhp = 100;
-	int bothp = 100;
-
-	for (int i = 0; i < 10; i++) {
+	int gamerhp = 300;
+	int bothp = 1000;
+	cout << "Правила игры: У вас и противника есть свои базы, начальные hp вашей базы: " << gamerhp << " , hp базы противника:" << bothp << "\nТак-же в каждом раунде вам буден дан выбор из трех бойцов: Мечник, лучник и Всадник";
+	cout << "\nМечник сильнее Всадника, Лучник сильнее Мечника, Всадник сильнее Лучника";
+	cout << "\nТак-же за победы в боях вы получаете деньги, которые можно тратить на улучшение бойцов и базы";
+	cout << "\nЗа любые сражения вы получаете xp, но за победы получаете их в большим колличестве. При достижении новых уровней будет доступна прокачка особых скиллов";
+	for (int i = 0; i < 100; i++) {
 		int bot = rand() % 3;
 		int gamer;
-		cout << "\n0=mechnik. 1=luchnik. 2=vsadnik/ ";
+		
+		cout << "\n0=Мечник. 1=Лучник. 2=Всадник";
 		cin >> gamer;
-		cout << "\nbot vibral/ " << bot;
+		
+		cout << "\nбот выбрал " << bot;
 		int result = table[bot][gamer];
+		int raznica;
 		
 		if (result == 0) { //бой с ничьей
 			gamerhp -= m[gamer].dmg;
 			bothp -= m[bot].dmg;
-			int raznica = m[gamer].dmg - m[bot].dmg;
-			cout << "\nhp gamer " << gamerhp << "\nbothp " << bothp;
+			raznica = m[gamer].dmg - m[bot].dmg;
+			cout << "\nhp игрока " << gamerhp << "\nhp бота " << bothp;
 		}
 		if (result == 1) { //бой с проигрышем
 			gamerhp -= m[gamer].dmg * 1.5;
 			bothp -= m[bot].dmg;
-			int raznica = (m[gamer].dmg*1.5) - m[bot].dmg;
-			cout << "\nhp gamer " << gamerhp << "\nbothp " << bothp;
+			raznica = (m[gamer].dmg*1.5) - m[bot].dmg;
+			cout << "\nhp игрока " << gamerhp << "\nhp бота " << bothp;
 		}
 		if (result == 2) { //бой с победой
 			gamerhp -= m[gamer].dmg;
 			bothp -= m[bot].dmg * 1.5;
-			int raznica = m[gamer].dmg -( m[bot].dmg*1.5);
-			cout << "\nhp gamer " << gamerhp << "\nbothp " << bothp;
+			raznica = m[gamer].dmg -( m[bot].dmg*1.5);
+			many += 10;
+			cout << "\nhp игрока " << gamerhp << "\nhp бота " << bothp;
 		}
+		//cout<< " raznica:"<<raznica;
 		
-			if (raznica//) {
-
-		}
+			if (raznica==0) {//ничья
+				xp += 2;
+				cout << "\nxp: " << xp;
+	    	}
+			if (raznica > 0) {//победа
+				xp+= 4;
+				cout << "\nxp: " << xp;
+			}
+			if (raznica < 0) {//проигрыш
+				xp += 1;
+				cout << "\nxp: " << xp;
+			}
 
 		if (gamerhp <= 0 && bothp <= 0) { // Ничья
-			cout << "\nDraw";
+			cout << "\nНичья";
 			break;
 		}
 
-		if (gamerhp <= 0) { //закончились твои хп, проиграл
-			cout << "\nYor loos";
+		if (gamerhp <= 0 && bothp > 0) { //закончились твои хп, проиграл
+			cout << "\nВы проиграли";
 			break;
 		}
 		if (bothp <= 0) { //победил бота
-			cout << "\nWinn!";
+			cout << "\nПобеда!";
 			break;
 		}
+
+		if (xp >= 5) {
+			lvl++;
+			xp -= 5;
+			cout << "\nПоздравляем с поднятием уровня! Ваш нынешний уровень " << lvl;
+
+		}
+		int magaz = many;
+		for (int mag = 0; mag < magaz / 5;mag++) {
+			cout << "\nУ вас есть " << many << " Денег.\nЖелаете улучшить войска, или базу?\nНажмите 0 для продолжения игры. Нажмите 1 для перехода в магазин.";
+			cin >> gamer;
+			if (gamer == 1) {//продумать разную стоимость
+				cout << "\nДля улучшения оружия Мечника (+5 урона/ стоимость 5) нажмите 1\nДля улучшения оружия Лучника (+5 урона/ стоимость 5) нажмите 2\nДля улучшения оружия Всадника (+5урона/ стоимость 5) нажмите 3\nДля усиления стен базы (+100hp/ стоимость 5) нажмите 4\nДля выхода из меню прокачки нажмите 0";
+				cin >> gamer;
+				if (gamer == 1 && many >= 5) {//если хватает денег
+					many -= 5;
+					m[0].dmg + 5;
+					cout << "\nУрон вашего Мечник: " << m[0].dmg;
+				}
+				if (gamer == 1 && many < 5) {//не хватает мани
+					cout << "У вас не достаточно денег";
+				}
+				if (gamer == 2 && many >= 5) {//если хватает денег
+					many -= 5;
+					m[1].dmg + 5;
+					cout << "\nУрон вашего Лучника: " << m[1].dmg;
+				}
+				if (gamer == 2 && many < 5) {//не хватает мани
+					cout << "У вас не достаточно денег";
+				}
+
+				if (gamer == 3 && many >= 5) {//если хватает денег
+					many -= 5;
+					m[2].dmg + 5;
+					cout << "\nУрон вашего Всадника: " << m[2].dmg;
+				}
+				if (gamer == 3 && many < 5) {//не хватает мани
+					cout << "У вас не достаточно денег";
+				}
+
+				if (gamer == 4 && many >= 5) {//если хватает денег
+					many -= 5;
+					gamerhp + 100;
+					cout << "\nhp вашей базы:" << gamerhp;  //Выдаст в любом случае в конце цикла
+				}
+				if (gamer == 4 && many < 5) {//не хватает мани
+					cout << "У вас не достаточно денег";
+				}
+
+				
+
+
+
+			}
+		}//цикл магазина
+
+		cout << "\nhp вашей базы: " << gamerhp;
+		cout << "\nhp базы бота: " << bothp;
+
+
+
 	}
 }
 
 
 int main()
 {
+	SetConsoleOutputCP(CP_UTF8);
 	srand(time(0));
 	//Skill_Tree();
 	itog();
